@@ -1,0 +1,24 @@
+
+See the README one level up about where to find the reference manual
+for the stm32f4 and schematics for the board.
+
+Note the external 8MHz clock is used to get a stable 9600 baud on
+the uart.
+
+Looks like my version of stlink is allowing the rom to run at some
+point.  If the rom is data that causes the microcontroller to crash
+you may have to use the stlink2_flash program instead.  I had it where
+I couldnt run from ram depending on what I programmed into the rom. (without
+using a flash tool like stlink2_flash, to repair the flash).
+
+Copy a flash binary you want to program to a file named flash-bin, then
+make this project and run it from ram.
+
+If flash-bin is zero length, for example
+
+rm -f flash-bin
+touch flash-bin
+
+then it will run a rom test across the first 64Kbytes, four sectors.
+fill once then read back.
+

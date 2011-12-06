@@ -1,0 +1,32 @@
+
+See the README one level up about where to find the reference manual
+for the stm32f4 and schematics for the board.
+
+This is derived from blinker02.  General purpose timer TIM5 is used to
+control the blink rate of the led.
+
+The 8MHz external clock HSE is multiplied up to be a 168MHz clock which
+is the max clock rate for this chip.
+
+There are a number of rules for the pll, many things have clock speed
+limits or range limits.  pllmult.c was used to come up with the main
+pll multiplier and divisors.
+
+The flash has a speed limit as does the peripherals so those are reflected
+in divisors in the ClockInit() function.
+
+TIM5 is actually a 32 bit counter not 16 like many of the others.  If
+we count to 168,000,000 * 4 ticks that should be 4 seconds right?
+Well we get 8 seconds per led blink.  I think what is going on is there
+are two AHB divisors PPRE1 and PPRE2 with different speed limits.  To
+keep PPRE2 at or under 84Mhz it wants a divide by 2, to keep PPRE1 under
+42MHz it wants a divide by 4.  The clock tree diagram doesnt really show
+these two divisors (that I can see) but it has a thing for the timers
+where if divisor is non-zero then multiply by 2.  I assume what this all
+means is PPRE1 which is a divide by 4 is multiplied by 2 to feed the
+timers.  And that appears to match, if you change PPRE1 to divide by 8
+and the it takes 16 seconds for the led to change.
+
+The stm32fdiscovery board users manual has a block diagram for the
+chip which shows TIM5 is on the AHB/APB1 side, so that also matches
+what we are seeing with PPRE1 affecting the TIM5 counter.

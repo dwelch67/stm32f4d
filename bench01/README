@@ -1,0 +1,74 @@
+
+See the README one level up about where to find the reference manual
+for the stm32f4 and schematics for the board.
+
+This is derived from uart02.
+
+This is a benchmark both comparing compilers gcc and llvm, llvm versions
+2.9 vs 3.0.  Thumb instruction set with and without thumb2 extensions.
+As well as the hardware featches instruction cache, data cache, and
+prefetch.  Benchmarks are what they are, you can manipulate them to make
+whatever you want win or lose or whatever, this is more of something
+interesting to feed this hardware to see what the hardware features
+do with it.
+
+The code under test uses the eXtended TEA cipher.
+http://en.wikipedia.org/wiki/XTEA
+
+The GCC used is from Codesourcery:
+
+arm-none-eabi-gcc (Sourcery G++ Lite 2011.03-42) 4.5.2
+Copyright (C) 2010 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+Had a mistake there, I had the stack and data colliding, not sure how
+it ran at all.  Fixed it and for this code llvm still beats gcc and llvm
+3.0 beats 2.9 by just a little bit.
+
+
+
+LLVM is pulled from the repos, version 2.9 and the released any day/minute
+now version 3.0.  Llvm compiles were with and without optimization.
+
+1 bench01.gcc.thumb.bin
+2 bench01.gcc.thumb2.bin
+3 bench01.clang.thumb.norm.bin
+4 bench01.clang.thumb.opt.bin
+5 bench01.clang.thumb2.norm.bin
+6 bench01.clang.thumb2.opt.bin
+
+00030F84 0002CFDC 000578AC 0003A6A6 00051FE8 00030BC0 nothing
+00030F86 0002CFDC 000578AC 0003A6A8 00051FE8 00030BC0 nothing
+0002AFE4 00021798 00056C6C 00037424 00049FE2 0002347A prefetch
+0002AFE2 0002179A 00056C6C 00037424 00049FE2 0002347A prefetch
+00027720 0001C1C6 0004E572 0002E82C 00043134 0001A872 icache
+0002771E 0001C1BE 0004E562 0002E81C 00043118 0001A854 icache
+00030A0A 0002C7C2 0005716E 00039C88 00051FE8 00030BBE dcache
+00030A0A 0002C7C4 0005716C 00039C86 00051FE8 00030BC0 dcache
+00027224 0001BA6A 0004DF36 0002DF6E 00043134 0001A872 icache+dcache
+00027224 0001BA64 0004DF24 0002DF5E 00043118 0001A856 icache+dcache
+00027218 0001BA52 0004DF36 0002DF6C 0004312C 0001A866 all three
+00027200 0001BA24 0004DF22 0002DF5E 0004311A 0001A854 all three
+
+1 llvm2.9 thumb
+2 llvm2.9 thumb2
+3 llvm3.0 thumb
+4 llvm3.0 thumb2
+
+0003A6A6 00030BC0 0003A022 00031C66 nothing
+0003A6A8 00030BC0 0003A022 00031C68 nothing
+00037424 0002347A 0003755E 00025620 prefetch
+00037424 0002347A 0003755E 0002561E prefetch
+0002E82C 0001A872 000312E8 0001A0B2 icache
+0002E81C 0001A854 000312DA 0001A09A icache
+00039C88 00030BBE 00039446 00031C68 dcache
+00039C86 00030BC0 00039442 00031C66 dcache
+0002DF6E 0001A872 000308E6 0001A0B2 icache+dcache
+0002DF5E 0001A856 000308DC 0001A09A icache+dcache
+0002DF6C 0001A866 000308E6 0001A0A4 all three
+0002DF5E 0001A854 000308DA 0001A098 all three
+
+So llvm is posting the best scores for this test.  And llvm3.0 is a
+touch faster code than llvm2.9.
+

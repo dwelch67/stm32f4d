@@ -1,0 +1,22 @@
+
+See the README one level up about where to find the reference manual
+for the stm32f4 and schematics for the board.
+
+This is derived from blinker03.
+
+The main internal clock is set to 168MHz.  PPRE1 is a divide by 8 to get
+it to 21MHz.  This is divided down in the uart to be used to create
+16x oversampled 9600 baud.
+
+I very much like that this is not another 8250 clone, in fact all of
+the defaults are idea, 8 bits no parity 1 stop bit no interrupts you dont
+have to change any bits from the default.  You set the divisor register
+and turn the uart on.  You can separate enable the TX and RX side of the
+uart.  This example at the moment is simply interested in getting the
+uart divisor right or close enough and getting the uart up and running
+at all.
+
+Not polling the transmit buffer empty because this example is using a
+timer to dribble one character a second out the port, if the port cant
+deliver one character in a second then something is seriously broken.
+The next example will add to this one and use the transmit status bits.

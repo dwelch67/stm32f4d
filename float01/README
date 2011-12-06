@@ -1,0 +1,20 @@
+
+See the README one level up about where to find the reference manual
+for the stm32f4 and schematics for the board.
+
+This is derived from blinker01.  I bought this board to play with the
+floating point unit.  This example demonstrates turning on the fpu
+and using it to multiply a couple of numbers.
+
+
+    vmov s0,r0          ; copy the contents of r0 to s0
+    vcvt.f32.u32 s0,s0  ; convert s0 from unsigned int to float
+    vmov s1,r1          ; copy r1 to s1
+    vcvt.f32.u32 s1,s1  ; convert s1 from unsigned int to float
+    vmul.f32 s0,s0,s1   ; multiply s0 = s0 * s1
+    vcvt.u32.f32 s0,s0  ; convert s0 from float to unsigned int
+    vmov r0,s0          ; copy s0 to r0
+
+
+
+Gnu assembler was complaining until I specified a -mfpu.

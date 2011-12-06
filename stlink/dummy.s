@@ -1,0 +1,47 @@
+
+.cpu cortex-m3
+.thumb
+
+.word   0x20020000  /* stack top address */
+.word   _start      /* 1 Reset */
+.word   hang        /* 2 NMI */
+.word   hang        /* 3 HardFault */
+.word   hang        /* 4 MemManage */
+.word   hang        /* 5 BusFault */
+.word   hang        /* 6 UsageFault */
+.word   hang        /* 7 RESERVED */
+.word   hang        /* 8 RESERVED */
+.word   hang        /* 9 RESERVED*/
+.word   hang        /* 10 RESERVED */
+.word   hang        /* 11 SVCall */
+.word   hang        /* 12 Debug Monitor */
+.word   hang        /* 13 RESERVED */
+.word   hang        /* 14 PendSV */
+.word   hang        /* 15 SysTick */
+.word   hang        /* 16 External Interrupt(0) */
+.word   hang        /* 17 External Interrupt(1) */
+.word   hang        /* 18 External Interrupt(2) */
+.word   hang        /* 19 ...   */
+
+.thumb_func
+.global _start
+_start:
+
+    ldr r0,=0x40023830
+    ldr r1,[r0]
+    mov r2,#0x8
+    orr r1,r2
+    str r1,[r0]
+
+    ldr r0,=0x40020C00
+    ldr r1,=0x55000000
+    str r1,[r0,#0x00]
+
+    ldr r1,=0xC0003000
+    str r1,[r0,#0x18]
+
+
+.thumb_func
+hang:   b .
+
+.end

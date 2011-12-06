@@ -1,0 +1,7 @@
+
+See the README one level up about where to find the reference manual
+for the stm32f4 and schematics for the board.
+
+This is derived from uart03.  Same as uart03 but 115200.
+
+Echos whatever it gets on the RX to the TX

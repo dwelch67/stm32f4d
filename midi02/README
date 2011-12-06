@@ -1,0 +1,23 @@
+
+See the README one level up about where to find the reference manual
+for the stm32f4 and schematics for the board.
+
+derived from midi01, see midi01
+
+Bought one of these:
+
+http://www.sparkfun.com/products/9598
+
+Only focusing on watching the midi data, hooked it up to my Roland
+drum set with a TD-9 computer.
+
+Added time stamps, microcontroller to host computer is now at 155200
+baud.  For every byte that comes in on midi, that byte plus two bytes
+of timestamp are sent to the host.
+
+The timer is based on a 84MHz clock and the timestamp divided by 4096,
+so in theory 20507.8125 ticks per second for the 16 bit timer used.
+One fourth of a second is about 5147 ticks.  I am seeing the 0xFE byte
+come in closer to 5148 ticks.  Could be just a subtle difference in
+clocks perhaps.
+

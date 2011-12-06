@@ -1,0 +1,61 @@
+
+Got my STM32F4DISCOVERY board today from digikey.  I didnt know there
+was a cortex-m with an fpu so I wanted to try it out.  Cost about $20,
+they are giving these things away you might as well get one.
+
+http://www.st.com/internet/evalboard/product/252419.jsp
+
+Under the Design support tab you will want to download the users manual
+
+UM1472: STM32F4DISCOVERY STM32F4 high-performance discovery board
+
+It contains the schematic so we can figure out where the leds and other
+stuff are on the board.
+
+It uses the STM32F407VGT6 part
+
+http://www.st.com/internet/mcu/product/252140.jsp
+
+You are definitely going to need the reference manual under the Design
+Support tab.
+
+RM0090: STM32F405xx, STM32F407xx, STM32F415xx and STM32F417xx advanced
+ARM-based 32-bit MCUs
+
+You are also going to want the TRM for the ARM cortex-m4f core
+
+http://infocenter.arm.com/help/topic/com.arm.doc.ddi0439c/DDI0439C_cortex_m4_r0p1_trm.pdf
+
+I derived a command line loader from
+
+https://github.com/texane/stlink
+
+which is a gdbserver for the various stm32 stlink boards.  Mine is
+limited to this board.  You only need the mini-b usb plugged in to use
+the stlink interface, powers the board and communicates with the stlink
+interface.
+
+Another way to load is to remove the zero ohm resistor on solder bridge
+SB16.  SB16 as shipped shorts boot0 to ground.  With boot0 high
+the normal embedded bootloader runs on the stm32f4.  It happens to be a
+dfu based usb bootloader.  You will need the micro-b usb connected as
+well.  this util works on ubuntu:
+
+http://gitorious.org/~tormod/unofficial-clones/dfuse-dfu-util
+
+Power cycle or reset the microcontroller with boot0 floating wait a
+few seconds then
+
+dfu-util -d 0483:df11 -c 1 -i 0 -a 0 -s 0x08000000 -D myprogram.bin
+
+After loading, short boot0 to ground and reset again to run your program
+from flash.  Open boot0 and press reset to try again.
+
+If you leave boot0 tied to ground, it is as if SB16 were connected and
+you can use the stlink interface.
+
+
+I decided to separate/isolate the stm32f4 discovery samples from the stm32 value line discovery samples
+so now this is in its own repo
+
+

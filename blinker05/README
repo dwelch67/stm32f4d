@@ -1,0 +1,79 @@
+
+See the README one level up about where to find the reference manual
+for the stm32f4 and schematics for the board.
+
+This is derived from blinker04. For some reason the natural thought is
+that you need interrupts to do things, in particular timers to blink
+leds.  It is pretty clear with the previous examples that you do not.
+This example shows but one of many ways to do an interrupt based timer.
+
+The Cortex-m series cores from ARM are pretty cool, unlike the ancestors
+they dont have a bunch of modes and stack pointers and all of that.  It
+is a mix of old school and new school.  The interrupt causes a number
+of registers to go on the stack plus the link register (r14) is given
+a value that you wont see, and yes you are in a different mode but
+your registers and stack are the same.  Basically if your compiler
+follows the (E)ABI then you can put the address of the C handler directly
+in the interrupt vector table.  In the old days you needed to call some
+assembler or use some compiler feature to wrap the function with the
+right instructions to save stuff on the stack and return with the
+proper return from interrupt instruction, etc.  Dont need that here
+the hardware does that so you can call a generically compiled C function.
+
+Naturally you need to be careful what you do in that function it is
+still an interrupt handler.
+
+On the flip side, ARM makes cores, logic designs, not chips, someone
+who is in the chip business buys the rights to use the ARM core in their
+chips.  So when you see ST say external interrupt they are talking
+external to them, outside the chip.  When ARM says external interrupt
+they are talking external to them which is outside the core, BUT could
+be INSIDE the chip or outside the chip depending on what the vendor
+did.
+
+ST did a pretty good job laying out a map of the interrupt vector table
+showing what they wired to what.  Compare that with ARM's documentation
+and you may begin to realize that the first 16 items in the vector
+table, including the stack pointer at offset/address zero, are fixed
+to the ARM core.  Number 16 on are external to the ARM core.  Interrupt
+number 0 is actually at location 16 in the vector table.  1 at 17
+and so on.  So TIM5 is at location 66 in the table but is interrupt
+number 50.  The ST docs show you that you need it to be at address
+0x...108.  And that is where it ends up, need to check it to make sure
+the cortex-m can have up to 256 interrupts, that is a lot of vector table
+to get right.
+
+08000104:   0800014f    stmdaeq r0, {r0, r1, r2, r3, r6, r8}
+08000108:   08000179    stmdaeq r0, {r0, r3, r4, r5, r6, r8}
+0800010c:   0800014f    stmdaeq r0, {r0, r1, r2, r3, r6, r8}
+...
+08000178 <tim5_handler>:
+
+You will need to add to the documents you already have the armv7-m
+Architectural Reference Manual (ARM) or the ARMv7-m ARM.  Used to
+be there was one ARM ARM with everything, there are too many cores now
+the formerly singular ARM ARM is now the ARMv5 ARM or something like
+that and the newer familes have their own.
+
+The registers are called out in the ST users guide as well but just
+addresses from the cortex-m3 core.  Starting with the lsbit of the
+first regsiter in the range 32 interrupts per register for most of
+them, offset 0x0 bit 0 being interrupt 0 bit 1 interrupt 1...offset 0x4
+bit 0 being interrupt 32, bit 1 interrupt 33 and so on.  The priority
+register is the exception at 8 bits per interrupt.  Most of these
+registers are of the type if you write a 1 it does something if you
+write a 0 it does nothing.  So
+    PUT32(0xE000E104,0x00040000);
+enables interrupt 50.  And that is all we need to do with the NVIC unless
+you want to get into priorities, which interrupt can interrupt another.
+I only have one interrupt enabled so dont really care for this example.
+
+We dont need to do anything more than that other than the standard thing
+of clearing the source of the interrupt in the ISR so that it doesnt
+retrigger and/or so that it can trigger again.  With that register
+I am being a bit rude and clearing everything, would probably want
+to do a read-modify write or more work in the handler.
+
+
+
+

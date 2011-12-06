@@ -1,0 +1,15 @@
+
+This is the classic game of adventure.  Yeah, really, on a
+microcontroller.
+
+It needs some debugging, perhaps compiler, perhaps code, who knows.
+
+Brought this over from mbed_samples and changed uart/ram definitions
+for this chip.  Seems to work much better, perhaps it because there
+is a lot more room on this one, room for a stack, etc.
+
+Tried gcc thumb and thumb and clang opt thumb and thumb2 and they all
+appear to work.  or at least dont crash right away.
+
+The command parser is crude if you backspace you basically hose the
+command line, try again.

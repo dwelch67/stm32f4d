@@ -1,0 +1,40 @@
+
+See the README one level up about where to find the reference manual
+for the stm32f4 and schematics for the board.
+
+This is derived from blinker01.  General purpose timer TIM5 is used to
+control the blink rate of the led.  The chip has an internal 16MHz clock
+that it powers up using.  The board has an 8MHz crystal based clock
+which is going to be more accurate than the internal 16Mhz clock, so
+ideally you want to use it.
+
+First we verify that we are starting up with the 16MHz clock.  Most/all
+of the timers can be used as simple infinite counters rolling over
+from 0xFFFF to 0x0000 (if set as an upcounter).  So half the time the
+msbit of the counter is on, half the time it is off.  32768 timer
+ticks on, 32768 timer ticks off.  This example monitors the msbit of
+the timer watching for these transitions, basically watch for it to
+change from 0 to 1 then wait for 1 to 0 then decrement the count in the
+loop.  So the timdelay function waits 1000*65536 timer ticks or
+65536000.  Assuming that the peripheral timer is set to no divisor,
+basically tied directly to the system timer, at 16MHz we would see the
+led change state roughly every 4 seconds at 8MHz roughy every 8 seconds.
+(a stopwatch or watch with a second hand is quite useful for this).
+
+If you leave this line in as is:
+
+    PUT32(RCCBASE+0x08,0x00000001);
+
+It selects the external oscillator and you should see the led blink every
+8 seconds.  Take that line out or replace it with
+
+    PUT32(RCCBASE+0x08,0x00000000);
+
+And the led changes state every 4 seconds indicating the internal (HSI)
+clock.
+
+
+
+
+
+

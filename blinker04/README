@@ -1,0 +1,7 @@
+
+See the README one level up about where to find the reference manual
+for the stm32f4 and schematics for the board.
+
+This is derived from blinker03.
+
+Uses the auto reload/preload register and polls the interrupt bit.

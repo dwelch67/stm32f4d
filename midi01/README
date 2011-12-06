@@ -1,0 +1,64 @@
+
+See the README one level up about where to find the reference manual
+for the stm32f4 and schematics for the board.
+
+Bought one of these:
+
+http://www.sparkfun.com/products/9598
+
+Only focusing on watching the midi data, hooked it up to my Roland
+drum set.
+
+You really dont need to go through a microcontroller, the uart in
+a pc has many divisors just like a microcontroller does its a matter
+of telling your os/driver to select the midi baud rate.
+
+Midi at the hardware level is simple serial port stuff, 8 bits no parity
+one stop bit.  The strange thing about it is the bit rate, we are
+used to rates like 115200, 57600, 38400, etc.  Midi runs at 31250.
+
+First look for bytes with the upper bit set, from there you will
+usually have bytes with the lower bit set that go with it.  I saw this
+roland link
+
+http://media.rolandus.com/manuals/TD-12_MI.pdf
+http://media.rolandus.com/manuals/TD-20_MI.pdf
+
+I have a TD-9 and the messages are similar and/or the same.
+
+Oh, so this stm324f chip has many uarts.  Uart2 is hooked up to the
+midi breakout board.  RX on the midi breakout board.  And uart 3 to the
+computer at 38400 baud.  Whatever the software sees in on uart2 it
+sends out on uart3.  The leds change state for every character
+that comes in as well.  A lot of overkill but that is okay.
+
+This breakout board and the midi shield from sparkfun are pretty much
+the same, the use an optoisolator and power it from the 5V and ground
+with RX being the received, isolated, signal.  The optoisolator is not
+limited to 5V, I think it goes from 0.5 to 7.  This microcontroller is
+3.3V based so I am using the 3.3V to ground to power the optoisolator.
+As anticipated it works just fine.
+
+So this midi protocol is a bit interesting there appears to be a 0xFE
+character, perhaps four times a second.  I did not try to change settings
+(yet) on the drum computer, perhaps this is a tempo thing that has
+been set or perhaps a standard thing.
+
+For drum beats the 0x8n and 0x9n commands are used.  Since a drum beat
+is a fast thing (unlike holding a key on a piano indefinitely) you get
+a note on and note off pair, three bytes per.  The velocity on the
+note on appears to be the strength of the beat.  Since midi data has its
+lsbit clear it is limited from 0x00 to 0x7F.  A hard hit is a 0x7F and
+lighter hits are smaller numbers.
+
+The high hat pedal used a 0xBn 0x04 vv where vv was the pressure, 0x7F
+being harder 0x00 being fully released.  As the pedal was applied you
+would see several messages showing increasing pressure.  Instead of
+triplets though starting with 0xBn 0x04 vv you would see a single 0xBn
+then 0x04 vv, 0x04 vv, pairs.  Several to many pairs as needed.
+
+I imagine that timestamps are desired to determine exactly when the
+note happened.
+
+
+

@@ -1,0 +1,19 @@
+
+See the README one level up about where to find the reference manual
+for the stm32f4 and schematics for the board.
+
+There are a number of leds on this board, four of them are grouped
+together on Port D 12, 13, 14, and 15.
+
+Looking at the reference manuals for the stm32 value line part and
+this part they have a lot of differences, you really have to just about
+start over finding what you need to do to turn on the port and blink
+some leds.
+
+If this is your first cortex-m3 I hopefully have better information in
+my mbed_samples repo (also at github) look at the first few blinkers.
+
+This example is in C with some asm to get things started.  Both gcc
+and llvm's clang are used to create various flavors of binaries from
+the same source.  The code is quite trivial but this hopefully creates
+a foundation of how to use these tools for an environment like this.
