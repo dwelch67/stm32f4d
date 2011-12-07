@@ -68,5 +68,11 @@ GET32:
 GET16:
     ldrh r0,[r0]
     bx lr
+;@-----------------------
+.thumb_func
+.globl ASM_DELAY
+ASM_DELAY:
+    sub r0,#1 ;@ subs r0,#1
+    bne ASM_DELAY
 
 .end

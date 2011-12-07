@@ -4,3 +4,11 @@ for the stm32f4 and schematics for the board.
 
 Trying to figure out how to talk to the LSI302DL on board by bit banging
 the spi interface.
+
+a lot closer, I can read two of the three axis, not sure why I cant
+read them all.
+
+Careful, I was playing with the built in spi controller, apparently
+shorted something out and fried a board.  good thing I bought spares.
+
+
