@@ -3,9 +3,6 @@
 .cpu cortex-m3
 .thumb
 
-b _start
-nop
-
 .word   0x20020000  /* stack top address */
 .word   _start      /* 1 Reset */
 .word   hang        /* 2 NMI */

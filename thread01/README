@@ -1,0 +1,21 @@
+
+See the README one level up about where to find the reference manual
+for the stm32f4 and schematics for the board.
+
+Note the external 8MHz clock is used to get a stable 9600 baud on
+the uart.
+
+This is a very simple threaded application.  Cooperative multithreading
+is perhaps the correct term.  The scheduler is more than that it is
+the operating system, if you will, it initalizes the hardware and has
+api calls for the threads to use.  Then it goes into its loop that
+round robin calls the thread handlers.  Each thread handler needs to
+get in and get out fast.  No stopping to poll or anything like that.
+You can poll in the sense that you try once per heartbeat for example
+and that is how these happen to work, no interrupts are needed to
+demonstrate threading.
+
+Future examples can/will do things like have the scheduler use different
+messages, perhaps watch the timer for you and send you a specific message
+on a particular time interval so you dont have to.  Later make that
+interrupt driven.

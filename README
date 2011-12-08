@@ -36,7 +36,7 @@ the stlink interface, powers the board and communicates with the stlink
 interface.
 
 Another way to load is to remove the zero ohm resistor on solder bridge
-SB16.  SB16 as shipped shorts boot0 to ground.  With boot0 high
+SB18.  SB18 as shipped shorts boot0 to ground.  With boot0 high
 the normal embedded bootloader runs on the stm32f4.  It happens to be a
 dfu based usb bootloader.  You will need the micro-b usb connected as
 well.  this util works on ubuntu:
@@ -51,7 +51,7 @@ dfu-util -d 0483:df11 -c 1 -i 0 -a 0 -s 0x08000000 -D myprogram.bin
 After loading, short boot0 to ground and reset again to run your program
 from flash.  Open boot0 and press reset to try again.
 
-If you leave boot0 tied to ground, it is as if SB16 were connected and
+If you leave boot0 tied to ground, it is as if SB18 were connected and
 you can use the stlink interface.
 
 
