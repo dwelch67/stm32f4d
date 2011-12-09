@@ -1,0 +1,10 @@
+
+See the README one level up about where to find the reference manual
+for the stm32f4 and schematics for the board.
+
+Note the external 8MHz clock is used to get a stable 9600 baud on
+the uart.
+
+Derived from thread01.  The scheduler manages the timer so that it can
+send messages to the threads at certain time intervals.
+
