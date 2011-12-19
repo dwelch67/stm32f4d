@@ -1,0 +1,76 @@
+
+See the README one level up about where to find the reference manual
+for the stm32f4 and schematics for the board.
+
+This is a uart example in the sense that hooking a uart up to it (note
+different pins than other uart examples).  You will see text come out
+and you can type stuff in and have it echoed back.
+
+The difference is the uart tx is bit banged, meaning software creates
+each of the state changes on the output to mimic what the hardware
+does when it sends something on the serial port.
+
+http://en.wikipedia.org/wiki/Universal_asynchronous_receiver/transmitter
+
+Each (8N1) character starts with a start bit, a 0 or low output on the
+gpio port.  Then the 8 data bits, lsbit first.  Then a stop bit (a 1 or
+high).  Leaving you in the right state for the next character.  Transmitting
+is pretty straight forward, set or reset the gpio output, count out
+the time using one of the timers, ideally.  And repeat until all the
+bits have been sent.
+
+Receiving is a little harder, not too bad though.  Ideally you wait
+for a falling edge, to start, since the other sides clock is used to
+generate the signal you need to use that falling edge as a reference
+to sample the rest of the character.  Ideally sampling mid bitcell.
+In this case our timer should count about 260 ticks for a whole bit
+cell, so we want to sample at 130 ticks, then 260 ticks each sample
+after that.  The hardware uart likely samples 16 times per bit cell
+and might even make some judgement about a framing or other error if the
+data changes in the middle of a bitcell.  We could do that in software
+but not worth the effort right now.
+
+I started off running directly off of the 8MHz clock but a combination
+of 8MHz, C code and my use of PUT32/GET32 abstractions, it wasnt sampling
+right.  Looking at the FLASH_ACR register, basically the flash cannot
+operate faster than 30MHz, so setting the processor clock to 30MHz
+we can run the flash without a wait state as fast as it will go.  I
+also turned on the caches which I should have done at 8MHz which might
+have solved the problem at that speed.
+
+It is important to note that there is a big accuracy difference between
+this:
+
+    while(1)
+    {
+        now=GET32(TIM5BASE+0x24);
+        if((now-then)>=HALF_VALUE) break;
+    }
+    then+=HALF_VALUE;
+
+and this:
+
+    while(1)
+    {
+        now=GET32(TIM5BASE+0x24);
+        if((now-then)>=HALF_VALUE) break;
+    }
+    then=now;
+
+With the latter you are accumulating the execution time into the code
+each time through the loop.  With the former you are using the timer,
+if the code is excessively slow you have problems, otherwise you have
+a code created latency but it does not accumulate from one sample to
+the next.
+
+The other thing to note here is that with a counter that rolls over
+like the 32 bit TIM5 counter, using 32 bit variables we can simply
+subtract one from the other and the math works out.  If I was using say
+a 16 bit timer I would need to mask everything to 16 bits to make it
+work.
+
+Take 4 bits as an example if we sample the timer at 0b0100 (4) and
+again at 0b1100 (12).  That would be 12-4 = 8 ticks, kinda obvious, but
+if we sampled an up counter at 0b1100 then at 0b0100 you get 0xFFFF...F8
+before you mask the answer but 0x8 after.
+
