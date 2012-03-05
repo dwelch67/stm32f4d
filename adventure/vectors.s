@@ -28,6 +28,8 @@
 .thumb_func
 .globl __div0
 __div0:
+
+.thumb_func
 hang:   b .
 
 .thumb_func
