@@ -1,0 +1,53 @@
+
+I have messed with the fez panda, not using it for .NET but using it
+as an affordable board to program.  Sparkfun had a new FEZ product
+in their lineup (well new to me I had not known of it) and looking at
+the FEZ site found another:
+
+http://www.ghielectronics.com/catalog/product/353/
+
+Which uses the same chip as the stm32f4 discovery.  The fez website
+mentions dfu mode with a pin shorted so that solves the problem of the
+panda.  Like the stm32f4d we are talking a 168Mhz microcontroller if
+you want to call it that, it has caches, an fpu, etc.
+
+Now for whatever reason they left pads but no voltage regulator, so
+you have two choices.  Buy a regulator and some caps and solder them
+yourself or power it from somewhere else.  I find it bothersome that
+this as with some other boards only put one 3.3V pin and one ground.
+Anyway, so I use something like this:
+
+http://www.sparkfun.com/products/718
+
+With some jumper wires (and soldered pins in the FEZ cerb40) to power
+the board as well as tie LODR high putting it in dfu mode.  I find it
+works best if you plug the ftdi usb to serial board in last.  Plug in
+the usb on the FEZ board then plug in the serial board being used
+to power it.
+
+I used to use this dfu-util one but it has been merged into the main so
+it is obsolete
+http://gitorious.org/~tormod/unofficial-clones/dfuse-dfu-util
+
+The main page appears to be here
+//http://dfu-util.gnumonks.org/releases/
+
+you can get the source above or with git
+git clone git://git.openezx.org/dfu-util
+
+If you used git then
+./autogen.sh
+
+from the tarball or git then:
+./configure
+make
+make install
+
+To write a program to the board, get ready to run the command below,
+press the reset button, the led will blink fast then slow, when it
+starts to blink slow then run the:
+
+dfu-util -d 0483:df11 -c 1 -i 0 -a 0 -s 0x08000000 -D myprogram.bin
+
+Once loaded then unplug the power to the board, remove the LODR jumper
+and apply power again.

@@ -1,0 +1,13 @@
+
+See README one level up for info on this board and programming it.
+
+I dont think there are leds on this board, I actually have not looked
+at the schematic yet to see what is there.  I took an old fashioned
+led and used jumpers to connect it to PA8 and PA7 using PA7 as a low
+output to create somewhat of another ground pin.  PA8 turns on and off.
+The rate is slow enough you can use a voltmeter if you dont have an
+led.
+
+
+
+
