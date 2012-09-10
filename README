@@ -59,3 +59,55 @@ I decided to separate/isolate the stm32f4 discovery samples from the stm32 value
 so now this is in its own repo
 
 
+UPDATE:  openocd supports the stlink interface.  I have tried this
+stm32f4 discovery and the stm32f0 discovery boards so far (both stlink
+version 2).  You do not need to desolder the boot0 solder bridge.  On
+the stm32f0 at this time it does not write the flash, I dont know if that
+is also the case for the stm32f4, dfu-util does make flash writing very
+easy.
+
+http://openocd.sourceforge.net/
+
+If you svn the latest you will need to run the bootstrap command below
+otherwise start with the configure command.  You may wish to change
+the --prefix.  I have an openocd install that has a different
+interface installed, and dont want to confuse you by mixing them so
+I am building an placing in directory then adding that path before using
+openocd.  I downloaded the 0.6.0 tarball and started with the configure
+line.
+
+./bootstrap
+./configure --prefix=/stlink --enable-maintainer-mode --enable-stlink
+make
+sudo make install
+
+then before using I
+
+PATH=/stlink/bin:$PATH
+
+(TODO: provide stm32f4discovery.cfg, for now get it from tcl/boards
+directory in openocd sources)
+
+To load a program in sram and run it the simplest way to do it is to
+have one terminal in the directory that contains your binary file
+(elf format), this way you dont have to type in a path, then with
+openocd in your path
+
+openocd -f stm32f0discovery.cfg
+
+it will connect and mention some breakpoints and such.
+
+In another terminal, doesnt matter what directory it is in,
+
+telnet localhost 4444
+
+This should connect to the other and you should see both screens reflect
+the connection.  IF THE CONNECTION WORKS then
+
+> halt
+> load_image blinker01.gcc.thumb.elf
+> resume 0x20000000
+
+If you happen to be running as root in that telnet window and the telnet
+doesnt connect and you type halt without thinking, you turn off your
+computer, a bit annoying...
