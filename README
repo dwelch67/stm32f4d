@@ -111,3 +111,9 @@ the connection.  IF THE CONNECTION WORKS then
 If you happen to be running as root in that telnet window and the telnet
 doesnt connect and you type halt without thinking, you turn off your
 computer, a bit annoying...
+
+
+
+I have focuses my stm32 examples in a different repo, stm32_samples.
+Guess I didnt pull this one in yet.  Need to find where I put these
+boards, I have so many different ones now.
